@@ -1,0 +1,78 @@
+---
+title: "Buy Smartphone with Data Science"
+author: "Ramon Roldan"
+date: "2022-01-29"
+categories:
+  - Data Science
+  - Tydeverse
+tags:
+  - Text Mining
+  - Web Scrapping
+  - Tydeverse
+  - Data Science
+  - ETL
+description: 'Utilizaremos dados reais do site TudoCelular e técnicas de Data science para ter embassamento na escolha e compra de um smartphone'
+
+output:
+  blogdown::html_page:
+    toc: true
+    toc_depth: 2
+---
+
+```{r, include=FALSE}
+#Clear the environment and load the libraries
+rm(list = ls())
+library(dplyr)
+library(rvest)
+library(tibble)
+library(janitor)
+library(DT)
+```
+This post has the main objective to sharing my experience with a business case, where i pretend tell how i buyed a new smartphone using the data science techniques.
+
+In jan/2021 i needed buy a new smartphone, then I thinking with me: Why not using data science to develop a machine learning model to help me?
+
+### Obtain the main URL to do web scrapping
+
+```{r}
+aparelhos<- tibble::tibble(url = unique(paste('https://www.tudocelular.com', rvest::read_html('https://www.tudocelular.com/celulares/fichas-tecnicas.html') %>% rvest::html_elements(xpath = '//*[@id="cellphones_list"]/article') %>% rvest::html_nodes('a') %>% rvest::html_attr('href'),sep = ''))) %>%
+  dplyr::filter(stringr::str_detect(string = url, pattern = 'ficha')) %>% dplyr::mutate(url = as.character(url))
+aparelhos
+```
+
+Desenvolvimento de função para realizar web scrapping e obter dados de cada aparelho
+### Developing of function to obtain the raw data of each smartphone
+
+```{r, echo=TRUE}
+fun_to_get_info <- function(phone) {
+  
+  url_link<- rvest::read_html(as.character(phone))
+  
+  telefone <-tibble::tibble(
+    nomes = url_link %>% rvest::html_elements(xpath = '//*[@id="controles_titles"]') %>% rvest::html_nodes('li') %>% rvest::html_text() %>% readr::parse_character(),
+    atributos = ifelse(
+      !is.na(url_link %>% rvest::html_elements(xpath = '//*[@id="phone_columns"]') %>% rvest::html_nodes('li') %>% rvest::html_text() %>% readr::parse_character()),
+      url_link %>% rvest::html_elements(xpath = '//*[@id="phone_columns"]') %>% rvest::html_nodes('li') %>% rvest::html_text() %>% readr::parse_character(),
+      url_link %>% rvest::html_elements(xpath = '//*[@id="phone_columns"]') %>% rvest::html_nodes('li') %>% rvest::html_node('i') %>% rvest::html_attr('class') %>% readr::parse_character()
+    )
+  ) %>% 
+    dplyr::mutate('Nome do Aparelho' = url_link %>% rvest::html_elements(xpath = '//*[@id="fwide_column"]/h2') %>% rvest::html_text())
+  return(telefone)
+}
+
+```
+
+### Aplicando função para baixar e formatar dados em tabela
+
+```{r}
+htop<- purrr::map_dfr(.x = aparelhos$url, .f = fun_to_get_info) %>% 
+  tidyr::pivot_wider(names_from = 'Nome do Aparelho', values_from = atributos) %>% janitor::clean_names()
+
+DT::datatable(htop)
+```
+
+### Other table
+
+```{r}
+knitr::kable(htop)
+```
