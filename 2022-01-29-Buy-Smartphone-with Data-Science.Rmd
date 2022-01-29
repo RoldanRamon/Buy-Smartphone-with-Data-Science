@@ -32,7 +32,7 @@ This post has the main objective to sharing my experience with a business case, 
 
 In jan/2021 i needed buy a new smartphone, then I thinking with me: Why not using data science to develop a machine learning model to help me?
 
-### Obtain the main URL to do web scrapping
+### Reading the main URL to obtain data about html page and then start web scraping process
 
 ```{r}
 aparelhos<- tibble::tibble(url = unique(paste('https://www.tudocelular.com', rvest::read_html('https://www.tudocelular.com/celulares/fichas-tecnicas.html') %>% rvest::html_elements(xpath = '//*[@id="cellphones_list"]/article') %>% rvest::html_nodes('a') %>% rvest::html_attr('href'),sep = ''))) %>%
@@ -40,8 +40,8 @@ aparelhos<- tibble::tibble(url = unique(paste('https://www.tudocelular.com', rve
 aparelhos
 ```
 
-Desenvolvimento de função para realizar web scrapping e obter dados de cada aparelho
-### Developing of function to obtain the raw data of each smartphone
+
+### Developing of function to do web scraping and then obtain the data about each device
 
 ```{r, echo=TRUE}
 fun_to_get_info <- function(phone) {
