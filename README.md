@@ -1,7 +1,3 @@
----
----
----
-
 # **Buy Smartphone with Data Science**
 
 <img src="https://tse3.mm.bing.net/th?id=OIF.3hhr57Tbbygv31nESLoyxw">
