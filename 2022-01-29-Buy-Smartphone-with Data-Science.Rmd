@@ -19,6 +19,9 @@ library(dplyr)
 library(rvest)
 library(tibble)
 library(janitor)
+library(tidyr)
+library(knitr)
+library(purrr)
 library(DT)
 ```
 
@@ -35,14 +38,14 @@ In jan/2021 i needed buy a new smartphone, then I thinking with me: Why not usin
 5. Conclusion: choosing "the best" device.
 
 ### 1. Getting the data by web scraping
-Reading the main URL to obtain data about html page and then start web scraping process
+Reading the main URL to obtain data about html page and then start web scraping process:
 ```{r}
 aparelhos<- tibble::tibble(url = unique(paste('https://www.tudocelular.com', rvest::read_html('https://www.tudocelular.com/celulares/fichas-tecnicas.html') %>% rvest::html_elements(xpath = '//*[@id="cellphones_list"]/article') %>% rvest::html_nodes('a') %>% rvest::html_attr('href'),sep = ''))) %>%
   dplyr::filter(stringr::str_detect(string = url, pattern = 'ficha')) %>% dplyr::mutate(url = as.character(url))
-aparelhos
+slice_head(aparelhos,n = 5)
 ```
 
-Developing of function to do web scraping and then obtain the data about each device
+Developing of function to do web scraping and then obtain the data about each device:
 ```{r, echo=TRUE}
 fun_to_get_info <- function(phone) {
   
@@ -59,19 +62,22 @@ fun_to_get_info <- function(phone) {
     dplyr::mutate('Nome do Aparelho' = url_link %>% rvest::html_elements(xpath = '//*[@id="fwide_column"]/h2') %>% rvest::html_text())
   return(telefone)
 }
-
 ```
 
-Apply function to do download the data and presentation on the beautiful table
+Apply function to do download the data and presentation on the beautiful table:
 ```{r}
 htop<- purrr::map_dfr(.x = aparelhos$url, .f = fun_to_get_info) %>% 
-  tidyr::pivot_wider(names_from = 'nomes', values_from = atributos, values_fn = list) %>% janitor::clean_names()
+  tidyr::pivot_wider(names_from = 'nomes', values_from = atributos, values_fn = list) %>% janitor::clean_names() %>% as_tibble()
 
-knitr::kable(x = slice(htop, 1:5),
+knitr::kable(x = slice_head(htop,n = 5),
              caption = "The top Devices")
 ```
 
 ### 2. Cleaning the data
+```{r}
+
+```
+
 
 ### 3. Start an exploratory analysis in the data
 
