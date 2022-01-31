@@ -2,57 +2,16 @@
 title: "Buy Smartphone with Data Science"
 author: "Ramon Roldan"
 date: "2022-01-29"
-categories:
-  - Data Science
-  - Tydeverse
-tags:
-  - Text Mining
-  - Web Scraping
-  - Tydeverse
-  - Data Science
-  - ETL
-description: 'This post has the main objective to sharing my experience with a business case, where i pretend tell how i buyed a new smartphone using the data science techniques.'
-
+categories: [Data Science, Tydeverse]
+tags: [Text Mining, Web Scraping, Tydeverse, Data Science, ETL]
 output:
-  blogdown::html_page:
-    toc: true
-    toc_depth: 2
+  md_document:
+    variant: gfm
+    preserve_yaml: TRUE
+knit: (function(inputFile, encoding) {
+  rmarkdown::render(inputFile, encoding = encoding, output_dir = "/home/ramon_de_lara/Ramon/roldanramon.github.io/_posts") })
 ---
 
-```{=html}
-<style>
-.column {
-float: left;
-width: 50%;
-padding: 10px;
-}
-
-.column4 {
-float: left;
-width: 33%;
-padding: 10px;
-}
-
-.column8 {
-float: left;
-width: 66%;
-padding: 10px;
-}
-
-.row:after {
-content: "";
-display: table;
-clear: both;
-}
-
-.center {
-display: flex;
-justify-content: center;
-align-items: center;
-height: 200px;
-}
-</style>
-```
 ```{r, include=FALSE}
 #Clear the environment and load the libraries
 rm(list = ls())
